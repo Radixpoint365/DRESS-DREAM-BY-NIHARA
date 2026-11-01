@@ -4,35 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#090707">
 
     <title>Product | Dress Dreams by Nihara</title>
-
     <meta name="description" content="Discover elegant fashion at Dress Dreams by Nihara.">
 
     <link rel="icon" href="assets/dress-dream-logo.jpeg">
 
-    <style>
-        :root {
-            --black: #111111;
-            --gold: #c5a66c;
-            --gold-dark: #a88950;
-            --cream: #faf8f3;
-            --white: #ffffff;
-            --text: #292929;
-            --muted: #777777;
-            --border: #e8e2d7;
-        }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+    <style>
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            background: var(--cream);
-            color: var(--text);
-            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            background: #f7f3ed;
+            color: #171311;
+            font-family: "DM Sans", sans-serif;
+            font-weight: 300;
         }
 
         button {
@@ -42,94 +39,61 @@
         /* HEADER */
 
         .product-header {
-            height: 82px;
-            width: 100%;
-            padding: 0 6%;
-            background: var(--black);
+            height: 92px;
+            padding: 12px 5.5%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--gold);
-        }
-
-        .brand-name {
-            color: var(--gold);
-            font-family: Georgia, serif;
-            font-size: 21px;
-            letter-spacing: 1.5px;
-            text-decoration: none;
-        }
-
-        .brand-name small {
-            display: block;
-            text-align: center;
-            font-size: 10px;
-            letter-spacing: 4px;
-            margin-top: 5px;
-        }
-
-        /* SHOPPING BAG ICON */
-
-        .product-cart-button {
-            position: relative;
-            width: 65px;
-            height: 65px;
-            padding: 5px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-        }
-
-        .bag-shape {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 54px;
-            height: 49px;
-            margin-top: 12px;
-            background: #111;
-            border: 1px solid var(--gold);
-            border-radius: 4px 4px 9px 9px;
-        }
-
-        .bag-handle {
-            position: absolute;
-            width: 25px;
-            height: 18px;
-            top: -16px;
-            left: 14px;
-            border: 3px solid var(--gold);
-            border-bottom: none;
-            border-radius: 14px 14px 0 0;
-        }
-
-        .bag-shape img {
-            width: 42px;
-            height: 34px;
-            object-fit: contain;
-            background: #fff;
-            border-radius: 2px;
-        }
-
-        .product-cart-button > #cartCount {
-            position: absolute;
+            background: #090707;
+            border-bottom: 1px solid #28211b;
+            position: sticky;
             top: 0;
-            right: 0;
-            min-width: 19px;
-            height: 19px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--gold);
-            color: #000;
-            border: 1px solid #fff;
-            border-radius: 50%;
-            font-size: 11px;
-            font-weight: bold;
+            z-index: 20;
         }
 
-        /* PRODUCT PAGE AREA */
+        .brand {
+            width: 300px;
+            display: block;
+        }
+
+        .brand img {
+            width: 100%;
+            display: block;
+            max-height: 72px;
+            object-fit: contain;
+        }
+
+        /* PRODUCT PAGE HEADER CART BUTTON */
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .icon-button {
+            border: 0;
+            background: none;
+            color: #e8dfd2;
+            font-size: 25px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .bag-button span {
+            position: absolute;
+            top: -5px;
+            right: -9px;
+            background: #b99b6b;
+            color: #090707;
+            border-radius: 50%;
+            font-size: 9px;
+            width: 16px;
+            height: 16px;
+            display: grid;
+            place-items: center;
+        }
+
+        /* PRODUCT PAGE */
 
         #productDetailsPage {
             min-height: 75vh;
@@ -143,14 +107,14 @@
 
         .back-to-shop {
             display: inline-block;
-            color: var(--text);
+            color: #171311;
             text-decoration: none;
             margin-bottom: 25px;
             font-size: 14px;
         }
 
         .back-to-shop:hover {
-            color: var(--gold-dark);
+            color: #a88950;
         }
 
         .product-details-layout {
@@ -169,8 +133,7 @@
         .main-product-image {
             width: 100%;
             height: 520px;
-            background: #f0ede6;
-            border-radius: 8px;
+            background: #eee8df;
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -193,8 +156,7 @@
         .product-thumbnail {
             width: 75px;
             height: 85px;
-            border: 1px solid var(--border);
-            border-radius: 5px;
+            border: 1px solid #c9bba9;
             overflow: hidden;
             background: #fff;
             cursor: pointer;
@@ -207,7 +169,7 @@
         }
 
         .product-thumbnail:hover {
-            border-color: var(--gold);
+            border-color: #b99b6b;
         }
 
         /* PRODUCT INFORMATION */
@@ -217,38 +179,39 @@
         }
 
         .product-page-category {
-            color: var(--gold-dark);
-            font-size: 12px;
+            color: #a78b61;
+            font-size: 9px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             margin-bottom: 15px;
+            font-weight: 600;
         }
 
         .product-page-info h1 {
-            font-family: Georgia, serif;
-            font-size: 32px;
-            font-weight: 500;
-            line-height: 1.3;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 42px;
+            font-weight: 400;
+            line-height: 1.1;
             margin-bottom: 18px;
         }
 
         .product-page-price {
             font-size: 25px;
-            font-weight: bold;
-            color: var(--black);
+            font-weight: 600;
+            color: #171311;
             margin-bottom: 22px;
         }
 
         .product-page-description {
-            color: #666;
-            line-height: 1.8;
-            font-size: 14px;
+            color: #746b61;
+            line-height: 1.9;
+            font-size: 13px;
             margin-bottom: 25px;
         }
 
         .product-option-title {
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 13px;
+            font-weight: 600;
             margin: 20px 0 12px;
         }
 
@@ -262,9 +225,8 @@
             min-width: 42px;
             min-height: 38px;
             padding: 8px 13px;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 4px;
+            background: transparent;
+            border: 1px solid #c9bba9;
             cursor: pointer;
             transition: 0.2s;
         }
@@ -272,9 +234,9 @@
         .product-page-options button:hover,
         .product-page-options button.active,
         .product-page-options button.selected {
-            background: var(--black);
-            color: var(--gold);
-            border-color: var(--gold);
+            background: #171311;
+            color: #d7c4a2;
+            border-color: #b99b6b;
         }
 
         .product-page-stock {
@@ -295,8 +257,8 @@
         .product-page-quantity button {
             width: 35px;
             height: 35px;
-            border: 1px solid var(--border);
-            background: #fff;
+            border: 1px solid #c9bba9;
+            background: transparent;
             cursor: pointer;
             font-size: 18px;
         }
@@ -306,25 +268,24 @@
         .product-page-add {
             width: 100%;
             padding: 16px;
-            background: var(--black);
-            color: var(--gold);
-            border: 1px solid var(--gold);
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
-            letter-spacing: 1px;
+            background: #171311;
+            color: #d7c4a2;
+            border: 1px solid #b99b6b;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.8px;
             cursor: pointer;
             transition: 0.3s;
         }
 
         .product-page-add:hover {
-            background: var(--gold);
-            color: var(--black);
+            background: #b99b6b;
+            color: #100d0a;
         }
 
         .product-page-note {
-            color: var(--muted);
-            font-size: 12px;
+            color: #786d61;
+            font-size: 11px;
             margin-top: 18px;
             line-height: 1.7;
         }
@@ -336,9 +297,9 @@
         }
 
         .related-products h2 {
-            font-family: Georgia, serif;
-            font-size: 27px;
-            font-weight: normal;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 32px;
+            font-weight: 400;
             margin-bottom: 25px;
         }
 
@@ -350,8 +311,7 @@
 
         .related-product-card {
             background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 5px;
+            border: 1px solid #e3d9cd;
             overflow: hidden;
         }
 
@@ -361,130 +321,193 @@
             object-fit: cover;
         }
 
-        /* CART DRAWER */
+        /* =================================
+           SAME SHOPPING BAG AS HOMEPAGE
+        ================================= */
 
-        #drawerBackdrop {
+        .drawer-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            background: #0009;
+            z-index: 40;
             opacity: 0;
             visibility: hidden;
-            transition: 0.3s;
+            transition: .25s;
         }
 
-        #drawerBackdrop.open {
+        .drawer-backdrop.open {
             opacity: 1;
             visibility: visible;
         }
 
-        #cartDrawer {
+        .cart-drawer {
             position: fixed;
+            z-index: 41;
+            right: 0;
             top: 0;
-            right: -430px;
-            width: 400px;
-            max-width: 90%;
-            height: 100%;
-            background: #fff;
-            z-index: 1001;
+            height: 100dvh;
+            width: min(440px, 100%);
+            background: #f7f3ed;
+            transform: translateX(102%);
+            transition: transform .3s;
             display: flex;
             flex-direction: column;
-            transition: right 0.3s ease;
-            box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+            padding: 28px;
         }
 
-        #cartDrawer.open {
-            right: 0;
+        .cart-drawer.open {
+            transform: translateX(0);
         }
 
-        .cart-header {
-            padding: 22px;
+        .drawer-head {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--border);
+            align-items: center;
+            border-bottom: 1px solid #ddd2c4;
+            padding-bottom: 18px;
         }
 
-        .cart-header h2 {
-            font-family: Georgia, serif;
-            font-weight: normal;
+        .drawer-head .eyebrow {
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: #a78b61;
+            font-weight: 600;
+            margin: 0 0 8px;
         }
 
-        #cartClose {
-            background: none;
-            border: none;
-            font-size: 27px;
-            cursor: pointer;
+        .drawer-head h2 {
+            font: 32px "Cormorant Garamond", serif;
+            margin: 0;
+            font-weight: 400;
         }
 
-        #cartItems {
+        .drawer-head .icon-button {
+            color: #171311;
+            font-size: 28px;
+        }
+
+        .cart-items {
+            overflow: auto;
             flex: 1;
-            padding: 20px;
-            overflow-y: auto;
+            padding: 15px 0;
+        }
+
+        .empty-cart {
+            color: #817568;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 45px;
         }
 
         .cart-row {
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 70px 1fr auto;
+            gap: 13px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e3d9cd;
+        }
+
+        .cart-row img {
+            width: 70px;
+            height: 88px;
+            object-fit: cover;
+        }
+
+        .cart-row h4 {
+            font: 19px "Cormorant Garamond", serif;
+            margin: 4px 0;
+        }
+
+        .cart-row p {
+            font-size: 11px;
+            margin: 0;
+            color: #786d61;
         }
 
         .qty-controls {
             display: flex;
+            gap: 9px;
             align-items: center;
-            gap: 12px;
-            margin-top: 12px;
+            margin-top: 9px;
         }
 
         .qty-controls button,
         .remove-item {
+            border: 0;
+            background: none;
             cursor: pointer;
+            color: #5e4a32;
         }
 
-        .cart-footer {
-            padding: 22px;
-            border-top: 1px solid var(--border);
+        .cart-bottom {
+            border-top: 1px solid #ddd2c4;
+            padding-top: 18px;
         }
 
-        .cart-subtotal {
+        .subtotal {
             display: flex;
             justify-content: space-between;
-            font-weight: bold;
-            margin-bottom: 18px;
+            font-size: 13px;
         }
 
-        #checkoutButton {
-            width: 100%;
-            padding: 15px;
-            background: var(--black);
-            color: var(--gold);
-            border: 1px solid var(--gold);
+        .subtotal strong {
+            font-size: 16px;
+        }
+
+        .cart-bottom > p,
+        .cart-bottom > small {
+            font-size: 10px;
+            color: #786d61;
+            line-height: 1.6;
+        }
+
+        .gold-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 26px;
+            background: #b99b6b;
+            color: #100d0a;
+            border: 1px solid #b99b6b;
+            padding: 16px 22px;
+            text-decoration: none;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1.8px;
             cursor: pointer;
-            font-weight: bold;
-            letter-spacing: 1px;
+            transition: .25s;
+        }
+
+        .gold-button:hover {
+            background: #d0b88f;
+            border-color: #d0b88f;
+        }
+
+        .checkout-button {
+            width: 100%;
+            margin: 12px 0;
         }
 
         /* TOAST */
 
-        #toast {
+        .toast {
             position: fixed;
-            bottom: 25px;
+            bottom: 22px;
             left: 50%;
-            transform: translateX(-50%);
-            background: var(--black);
-            color: var(--gold);
-            padding: 13px 22px;
-            border-radius: 5px;
-            z-index: 2000;
+            transform: translate(-50%, 20px);
+            background: #171311;
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 11px;
             opacity: 0;
-            visibility: hidden;
-            transition: 0.3s;
-            text-align: center;
-            max-width: 90%;
+            pointer-events: none;
+            transition: .25s;
+            z-index: 60;
         }
 
-        #toast.show {
+        .toast.show {
             opacity: 1;
-            visibility: visible;
+            transform: translate(-50%, 0);
         }
 
         /* FOOTER */
@@ -493,26 +516,32 @@
             margin-top: 60px;
             padding: 30px 15px;
             text-align: center;
-            background: var(--black);
-            color: var(--gold);
-            font-size: 13px;
+            background: #090707;
+            color: #d7c4a2;
+            font-size: 10px;
             letter-spacing: 1px;
         }
 
-        /* MOBILE RESPONSIVE */
+        /* RESPONSIVE */
 
-        @media (max-width: 768px) {
+        @media(max-width: 900px) {
+            .brand {
+                width: 240px;
+            }
+
+            .related-product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width: 768px) {
             .product-header {
-                height: 70px;
-                padding: 0 18px;
+                height: 76px;
+                padding: 8px 5%;
             }
 
-            .brand-name {
-                font-size: 16px;
-            }
-
-            .brand-name small {
-                font-size: 8px;
+            .brand {
+                width: 205px;
             }
 
             #productDetailsPage {
@@ -529,7 +558,7 @@
             }
 
             .product-page-info h1 {
-                font-size: 26px;
+                font-size: 32px;
             }
 
             .product-page-price {
@@ -550,13 +579,21 @@
             }
         }
 
-        @media (max-width: 380px) {
+        @media(max-width: 380px) {
+            .brand {
+                width: 175px;
+            }
+
             .main-product-image {
                 height: 310px;
             }
 
             .product-page-info h1 {
-                font-size: 23px;
+                font-size: 27px;
+            }
+
+            .cart-drawer {
+                padding: 22px;
             }
         }
     </style>
@@ -567,82 +604,93 @@
     <!-- HEADER -->
     <header class="product-header">
 
-        <a href="index.html" class="brand-name">
-            DRESS DREAMS
-            <small>BY NIHARA</small>
+        <a class="brand" href="index.html" aria-label="Dress Dreams home">
+            <img src="assets/dress-dream-logo.jpeg" alt="Dress Dreams by Nihara logo">
         </a>
 
-        <button
-            type="button"
-            id="cartToggle"
-            class="product-cart-button"
-            aria-label="Open shopping bag">
-
-            <span class="bag-shape">
-                <span class="bag-handle"></span>
-
-                <img
-                    src="assets/dress-dream-logo.jpeg"
-                    alt="Dress Dreams by Nihara logo">
-            </span>
-
-            <span id="cartCount">0</span>
-        </button>
+        <div class="header-actions">
+            <button
+                class="icon-button bag-button"
+                id="cartToggle"
+                type="button"
+                aria-label="Shopping bag">
+                ♧ <span id="cartCount">0</span>
+            </button>
+        </div>
 
     </header>
 
-    <!-- PRODUCT DETAILS ARE LOADED BY script.js -->
+    <!-- PRODUCT DETAILS -->
     <main id="productDetailsPage">
         <p style="text-align:center;padding:60px 10px;">
             Loading product...
         </p>
     </main>
 
-    <!-- CART BACKDROP -->
-    <div id="drawerBackdrop"></div>
+    <!-- SAME BACKDROP AS HOMEPAGE -->
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
-    <!-- SHOPPING CART DRAWER -->
-    <aside id="cartDrawer" aria-hidden="true">
+    <!-- SAME CART DRAWER AS HOMEPAGE -->
+    <aside
+        class="cart-drawer"
+        id="cartDrawer"
+        aria-label="Shopping bag"
+        aria-hidden="true">
 
-        <div class="cart-header">
-            <h2>Your Shopping Bag</h2>
-
-            <button
-                type="button"
-                id="cartClose"
-                aria-label="Close shopping bag">
-                &times;
-            </button>
-        </div>
-
-        <div id="cartItems">
-            <!-- Cart items are loaded by script.js -->
-        </div>
-
-        <div class="cart-footer">
-
-            <div class="cart-subtotal">
-                <span>Subtotal</span>
-                <span id="cartSubtotal">₹0</span>
+        <div class="drawer-head">
+            <div>
+                <p class="eyebrow">YOUR SELECTION</p>
+                <h2>Your shopping bag</h2>
             </div>
 
-            <button type="button" id="checkoutButton">
-                PROCEED TO CHECKOUT
+            <button
+                class="icon-button"
+                id="cartClose"
+                type="button"
+                aria-label="Close cart">
+                ×
             </button>
-
         </div>
 
+        <div class="cart-items" id="cartItems">
+            <p class="empty-cart">
+                Your bag is waiting for something beautiful.
+            </p>
+        </div>
+
+        <div class="cart-bottom">
+
+            <div class="subtotal">
+                <span>Subtotal</span>
+                <strong id="cartSubtotal">₹0</strong>
+            </div>
+
+            <p>Shipping and taxes calculated at checkout.</p>
+
+            <button
+                class="gold-button checkout-button"
+                id="checkoutButton"
+                type="button">
+                CONTINUE TO CHECKOUT →
+            </button>
+
+            <small>
+                UPI & cards will be available at secure checkout.
+                Cash on Delivery is not available.
+            </small>
+
+        </div>
     </aside>
 
-    <!-- TOAST MESSAGE -->
-    <div id="toast" role="status"></div>
+    <!-- TOAST -->
+    <div class="toast" id="toast" role="status"></div>
 
     <!-- FOOTER -->
     <footer class="product-footer">
         © 2026 DRESS DREAMS BY NIHARA. ALL RIGHTS RESERVED.
     </footer>
 
-    <!-- SUPABASE CONNECTION -->
+    <!-- SUPABASE -->
     <script src="supabase-config.js"></script>
     <script type="module" src="script.js"></script>
 
