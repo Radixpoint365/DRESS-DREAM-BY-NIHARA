@@ -14,7 +14,11 @@
         :root {
             --champagne: #d8bd83;
             --dark: #111111;
-            --muted: #777;
+            --muted: #bdb8ad;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -24,10 +28,14 @@
             font-family: Arial, sans-serif;
         }
 
+        /* HEADER */
+
         .product-page-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
             padding: 18px 6%;
             border-bottom: 1px solid #29251e;
             background: #111;
@@ -44,9 +52,12 @@
             letter-spacing: 1px;
         }
 
+        /* MAIN CONTAINER */
+
         .product-page-container {
-            max-width: 1150px;
-            margin: 45px auto;
+            width: 100%;
+            max-width: 850px;
+            margin: 35px auto;
             padding: 0 20px;
         }
 
@@ -57,21 +68,42 @@
             text-decoration: none;
         }
 
+        /* PRODUCT CONTENT */
+
+        #productDetailsPage {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 25px;
+            min-width: 0;
+        }
+
+        /* IMAGE ABOVE DETAILS */
+
         .product-details-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 45px;
-            align-items: start;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            width: 100%;
+            gap: 25px !important;
+            min-width: 0;
         }
 
         .product-gallery {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
             min-width: 0;
         }
 
         .main-product-image {
-            width: 100%;
-            aspect-ratio: 4 / 5;
-            object-fit: contain;
+            display: block;
+            width: 100% !important;
+            max-width: 480px;
+            height: 480px !important;
+            max-height: 65vh;
+            object-fit: contain !important;
+            margin: 0 auto;
             background: #181818;
             border: 1px solid #302b23;
             border-radius: 12px;
@@ -79,34 +111,44 @@
 
         .product-thumbnails {
             display: flex;
+            justify-content: center;
             gap: 10px;
             margin-top: 12px;
             flex-wrap: wrap;
         }
 
         .product-thumbnail {
-            width: 70px;
-            height: 85px;
+            width: 65px !important;
+            height: 75px !important;
             object-fit: cover;
             border: 1px solid #51452f;
             border-radius: 7px;
             cursor: pointer;
         }
 
+        /* PRODUCT INFORMATION */
+
         .product-information {
+            width: 100%;
+            max-width: 650px;
             padding: 10px 0;
+            margin: 0 auto;
+            overflow-wrap: anywhere;
+            min-width: 0;
         }
 
         .product-information h1 {
-            font-size: clamp(25px, 4vw, 36px);
+            font-size: clamp(24px, 4vw, 34px);
+            line-height: 1.3;
             margin: 0 0 14px;
             color: #fff;
         }
 
         .product-description {
-            color: #bdb8ad;
-            line-height: 1.7;
-            margin: 20px 0;
+            color: var(--muted);
+            line-height: 1.8;
+            margin: 18px 0;
+            overflow-wrap: anywhere;
         }
 
         .product-price {
@@ -116,8 +158,11 @@
             margin: 15px 0;
         }
 
+        /* COLOUR AND SIZE OPTIONS */
+
         .product-option {
-            margin: 25px 0;
+            margin: 22px 0;
+            width: 100%;
         }
 
         .product-option h3 {
@@ -147,11 +192,15 @@
             color: var(--champagne);
         }
 
+        /* STOCK */
+
         .product-stock {
-            color: #bdb8ad;
+            color: var(--muted);
             margin: 15px 0;
             font-size: 14px;
         }
+
+        /* QUANTITY */
 
         .quantity-control {
             display: flex;
@@ -175,7 +224,10 @@
             text-align: center;
         }
 
+        /* ADD TO BAG */
+
         .add-to-bag-button {
+            display: block;
             width: 100%;
             padding: 15px;
             border: 0;
@@ -191,8 +243,10 @@
             opacity: .9;
         }
 
+        /* RELATED PRODUCTS */
+
         .related-products {
-            margin-top: 65px;
+            margin-top: 55px;
         }
 
         .related-products h2 {
@@ -202,32 +256,62 @@
 
         #relatedProducts {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 20px;
+            width: 100%;
         }
 
+        /* LOADING MESSAGE */
+
         .page-message {
-            color: #d8bd83;
+            color: var(--champagne);
             padding: 40px 10px;
             text-align: center;
         }
 
-        @media (max-width: 700px) {
-            .product-page-container {
-                margin-top: 25px;
-            }
+        /* PRODUCT IMAGE SAFETY */
 
-            .product-details-layout {
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
+        #productDetailsPage img {
+            max-width: 100%;
+        }
+
+        /* MOBILE RESPONSIVE */
+
+        @media (max-width: 600px) {
 
             .product-page-header {
                 padding: 15px 5%;
             }
 
             .product-page-header .brand {
-                font-size: 15px;
+                font-size: 14px;
+            }
+
+            .product-page-container {
+                margin-top: 20px;
+                padding: 0 15px;
+            }
+
+            .main-product-image {
+                height: 360px !important;
+                max-height: 60vh;
+            }
+
+            .product-information h1 {
+                font-size: 25px;
+            }
+
+            .product-price {
+                font-size: 24px;
+            }
+
+            .product-thumbnails {
+                gap: 8px;
+            }
+
+            .product-thumbnail {
+                width: 55px !important;
+                height: 65px !important;
             }
         }
     </style>
@@ -235,25 +319,45 @@
 
 <body>
 
+    <!-- HEADER -->
+
     <header class="product-page-header">
-        <a class="brand" href="index.html">DRESS DREAMS BY NIHARA</a>
-        <a href="index.html">← Back to Shop</a>
+        <a class="brand" href="index.html">
+            DRESS DREAMS BY NIHARA
+        </a>
+
+        <a href="index.html">
+            ← Back to Shop
+        </a>
     </header>
+
+    <!-- MAIN PRODUCT PAGE -->
 
     <main class="product-page-container">
 
-        <a class="back-link" href="index.html">← Continue Shopping</a>
+        <a class="back-link" href="index.html">
+            ← Continue Shopping
+        </a>
+
+        <!-- JavaScript loads product information here -->
 
         <div id="productDetailsPage">
-            <div class="page-message">Loading product details...</div>
+            <div class="page-message">
+                Loading product details...
+            </div>
         </div>
+
+        <!-- RELATED PRODUCTS -->
 
         <section class="related-products">
             <h2>You May Also Like</h2>
+
             <div id="relatedProducts"></div>
         </section>
 
     </main>
+
+    <!-- SUPABASE AND WEBSITE JAVASCRIPT -->
 
     <script src="supabase-config.js"></script>
     <script type="module" src="script.js"></script>
