@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Product Details | Dress Dreams by Nihara</title>
+    <meta name="description" content="Explore beautiful fashion at Dress Dreams by Nihara.">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        :root {
+            --champagne: #d8bd83;
+            --dark: #111111;
+            --muted: #777;
+        }
+
+        body {
+            background: #0c0c0c;
+            color: #f8f5ee;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .product-page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 6%;
+            border-bottom: 1px solid #29251e;
+            background: #111;
+        }
+
+        .product-page-header a {
+            color: var(--champagne);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .product-page-header .brand {
+            font-size: 19px;
+            letter-spacing: 1px;
+        }
+
+        .product-page-container {
+            max-width: 1150px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 25px;
+            color: var(--champagne);
+            text-decoration: none;
+        }
+
+        .product-details-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 45px;
+            align-items: start;
+        }
+
+        .product-gallery {
+            min-width: 0;
+        }
+
+        .main-product-image {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            object-fit: contain;
+            background: #181818;
+            border: 1px solid #302b23;
+            border-radius: 12px;
+        }
+
+        .product-thumbnails {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .product-thumbnail {
+            width: 70px;
+            height: 85px;
+            object-fit: cover;
+            border: 1px solid #51452f;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .product-information {
+            padding: 10px 0;
+        }
+
+        .product-information h1 {
+            font-size: clamp(25px, 4vw, 36px);
+            margin: 0 0 14px;
+            color: #fff;
+        }
+
+        .product-description {
+            color: #bdb8ad;
+            line-height: 1.7;
+            margin: 20px 0;
+        }
+
+        .product-price {
+            color: var(--champagne);
+            font-size: 27px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .product-option {
+            margin: 25px 0;
+        }
+
+        .product-option h3 {
+            font-size: 14px;
+            color: var(--champagne);
+            margin-bottom: 12px;
+        }
+
+        .option-buttons {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+        }
+
+        .option-button {
+            padding: 10px 16px;
+            background: #191919;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .option-button.active,
+        .option-button:focus {
+            border-color: var(--champagne);
+            color: var(--champagne);
+        }
+
+        .product-stock {
+            color: #bdb8ad;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 22px 0;
+        }
+
+        .quantity-control button {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #6c5b3b;
+            background: #191919;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .quantity-control span {
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .add-to-bag-button {
+            width: 100%;
+            padding: 15px;
+            border: 0;
+            border-radius: 7px;
+            background: linear-gradient(100deg, #b99a5b, #e5d0a0);
+            color: #111;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .add-to-bag-button:hover {
+            opacity: .9;
+        }
+
+        .related-products {
+            margin-top: 65px;
+        }
+
+        .related-products h2 {
+            color: var(--champagne);
+            margin-bottom: 25px;
+        }
+
+        #relatedProducts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .page-message {
+            color: #d8bd83;
+            padding: 40px 10px;
+            text-align: center;
+        }
+
+        @media (max-width: 700px) {
+            .product-page-container {
+                margin-top: 25px;
+            }
+
+            .product-details-layout {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .product-page-header {
+                padding: 15px 5%;
+            }
+
+            .product-page-header .brand {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="product-page-header">
+        <a class="brand" href="index.html">DRESS DREAMS BY NIHARA</a>
+        <a href="index.html">← Back to Shop</a>
+    </header>
+
+    <main class="product-page-container">
+
+        <a class="back-link" href="index.html">← Continue Shopping</a>
+
+        <div id="productDetailsPage">
+            <div class="page-message">Loading product details...</div>
+        </div>
+
+        <section class="related-products">
+            <h2>You May Also Like</h2>
+            <div id="relatedProducts"></div>
+        </section>
+
+    </main>
+
+    <script src="supabase-config.js"></script>
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>
