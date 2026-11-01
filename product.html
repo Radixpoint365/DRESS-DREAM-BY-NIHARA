@@ -13,32 +13,23 @@
     <style>
         :root {
             --champagne: #d8bd83;
-            --dark: #111111;
-            --muted: #bdb8ad;
-        }
-
-        * {
-            box-sizing: border-box;
+            --product-dark: #111;
         }
 
         body {
             background: #0c0c0c;
             color: #f8f5ee;
             margin: 0;
-            font-family: Arial, sans-serif;
         }
-
-        /* HEADER */
 
         .product-page-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
+            align-items: center;
+            gap: 15px;
             padding: 18px 6%;
-            border-bottom: 1px solid #29251e;
             background: #111;
+            border-bottom: 1px solid #30291e;
         }
 
         .product-page-header a {
@@ -48,270 +39,317 @@
         }
 
         .product-page-header .brand {
-            font-size: 19px;
+            font-size: 18px;
             letter-spacing: 1px;
         }
 
-        /* MAIN CONTAINER */
-
-        .product-page-container {
-            width: 100%;
+        /* Main layout: image first, details below */
+        #productDetailsPage .product-page-container {
             max-width: 850px;
-            margin: 35px auto;
+            margin: 30px auto;
             padding: 0 20px;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-bottom: 25px;
-            color: var(--champagne);
-            text-decoration: none;
-        }
-
-        /* PRODUCT CONTENT */
-
-        #productDetailsPage {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            gap: 25px;
-            min-width: 0;
-        }
-
-        /* IMAGE ABOVE DETAILS */
-
-        .product-details-layout {
+        #productDetailsPage .product-details-layout {
             display: flex !important;
             flex-direction: column !important;
-            align-items: center !important;
-            width: 100%;
-            gap: 25px !important;
-            min-width: 0;
+            align-items: center;
+            gap: 30px;
         }
 
-        .product-gallery {
+        #productDetailsPage .product-gallery {
             width: 100%;
-            max-width: 480px;
+            max-width: 460px;
+            min-width: 0;
             margin: 0 auto;
-            min-width: 0;
         }
 
-        .main-product-image {
-            display: block;
-            width: 100% !important;
-            max-width: 480px;
-            height: 480px !important;
+        #productDetailsPage .main-product-image {
+            width: 100%;
+            height: 480px;
             max-height: 65vh;
-            object-fit: contain !important;
-            margin: 0 auto;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             background: #181818;
-            border: 1px solid #302b23;
+            border: 1px solid #352e22;
             border-radius: 12px;
         }
 
-        .product-thumbnails {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 12px;
-            flex-wrap: wrap;
+        #productDetailsPage .main-product-image img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
         }
 
-        .product-thumbnail {
-            width: 65px !important;
-            height: 75px !important;
-            object-fit: cover;
+        #productDetailsPage .product-thumbnails {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        #productDetailsPage .product-thumbnail {
+            width: 68px;
+            height: 82px;
+            padding: 0;
+            overflow: hidden;
+            background: #181818;
             border: 1px solid #51452f;
             border-radius: 7px;
             cursor: pointer;
         }
 
-        /* PRODUCT INFORMATION */
+        #productDetailsPage .product-thumbnail.active {
+            border: 2px solid var(--champagne);
+        }
 
-        .product-information {
+        #productDetailsPage .product-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Product information */
+        #productDetailsPage .product-page-info {
             width: 100%;
             max-width: 650px;
-            padding: 10px 0;
             margin: 0 auto;
-            overflow-wrap: anywhere;
-            min-width: 0;
+            padding: 5px 0 20px;
         }
 
-        .product-information h1 {
-            font-size: clamp(24px, 4vw, 34px);
-            line-height: 1.3;
-            margin: 0 0 14px;
+        #productDetailsPage .product-page-category {
+            color: var(--champagne);
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin: 0 0 10px;
+        }
+
+        #productDetailsPage .product-page-info h1 {
             color: #fff;
+            font-size: clamp(25px, 5vw, 34px);
+            line-height: 1.3;
+            margin: 0 0 12px;
         }
 
-        .product-description {
-            color: var(--muted);
-            line-height: 1.8;
-            margin: 18px 0;
-            overflow-wrap: anywhere;
-        }
-
-        .product-price {
+        #productDetailsPage .product-page-price {
             color: var(--champagne);
             font-size: 27px;
-            font-weight: bold;
-            margin: 15px 0;
+            font-weight: 700;
+            margin: 12px 0;
         }
 
-        /* COLOUR AND SIZE OPTIONS */
-
-        .product-option {
-            margin: 22px 0;
-            width: 100%;
+        #productDetailsPage .product-page-description {
+            color: #c2bdb3;
+            font-size: 15px;
+            line-height: 1.8;
+            margin: 18px 0 25px;
         }
 
-        .product-option h3 {
-            font-size: 14px;
+        #productDetailsPage .product-option-title {
             color: var(--champagne);
-            margin-bottom: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 22px 0 12px;
+            letter-spacing: 1px;
         }
 
-        .option-buttons {
+        #productDetailsPage .product-option-title strong {
+            color: #fff;
+            margin-left: 5px;
+            letter-spacing: 0;
+        }
+
+        /* Colour and size selection buttons */
+        #productDetailsPage .product-page-options {
             display: flex;
-            gap: 9px;
             flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .option-button {
+        #productDetailsPage .product-page-options button {
+            min-width: 48px;
+            min-height: 42px;
             padding: 10px 16px;
             background: #191919;
-            color: white;
-            border: 1px solid #555;
+            color: #f8f5ee;
+            border: 1px solid #514936;
             border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
+            transition: .2s ease;
         }
 
-        .option-button.active,
-        .option-button:focus {
+        #productDetailsPage .product-page-options button:hover:not(:disabled) {
             border-color: var(--champagne);
             color: var(--champagne);
         }
 
-        /* STOCK */
-
-        .product-stock {
-            color: var(--muted);
-            margin: 15px 0;
-            font-size: 14px;
+        #productDetailsPage .product-page-options button.selected {
+            background: var(--champagne);
+            color: #111;
+            border-color: var(--champagne);
         }
 
-        /* QUANTITY */
+        #productDetailsPage .product-page-options button:disabled {
+            opacity: .35;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
 
-        .quantity-control {
+        #productDetailsPage .product-page-stock {
+            color: #c4bdaF;
+            font-size: 13px;
+            margin: 20px 0;
+        }
+
+        /* Quantity */
+        #productDetailsPage .product-page-quantity {
             display: flex;
             align-items: center;
             gap: 15px;
-            margin: 22px 0;
+            margin: 20px 0;
         }
 
-        .quantity-control button {
-            width: 36px;
-            height: 36px;
-            border: 1px solid #6c5b3b;
+        #productDetailsPage .product-page-quantity strong {
+            margin-right: 8px;
+        }
+
+        #productDetailsPage .product-page-quantity button {
+            width: 38px;
+            height: 38px;
             background: #191919;
-            color: white;
+            color: #fff;
+            border: 1px solid #6c5b3b;
             border-radius: 5px;
+            font-size: 20px;
             cursor: pointer;
         }
 
-        .quantity-control span {
+        #productDetailsPage .product-page-quantity button:disabled {
+            opacity: .35;
+            cursor: not-allowed;
+        }
+
+        #productDetailsPage .product-page-quantity span {
             min-width: 20px;
             text-align: center;
         }
 
-        /* ADD TO BAG */
-
-        .add-to-bag-button {
-            display: block;
+        /* Add to bag */
+        #productDetailsPage .product-page-add {
             width: 100%;
-            padding: 15px;
-            border: 0;
-            border-radius: 7px;
+            padding: 16px;
             background: linear-gradient(100deg, #b99a5b, #e5d0a0);
             color: #111;
-            font-size: 15px;
-            font-weight: bold;
+            border: none;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
             cursor: pointer;
         }
 
-        .add-to-bag-button:hover {
-            opacity: .9;
+        #productDetailsPage .product-page-add:disabled {
+            opacity: .45;
+            cursor: not-allowed;
         }
 
-        /* RELATED PRODUCTS */
+        #productDetailsPage .product-page-note {
+            color: #999;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 15px;
+        }
 
-        .related-products {
+        #productDetailsPage .back-to-shop {
+            display: inline-block;
+            color: var(--champagne);
+            text-decoration: none;
+            margin-bottom: 22px;
+        }
+
+        /* Related products */
+        #productDetailsPage .related-products {
             margin-top: 55px;
         }
 
-        .related-products h2 {
+        #productDetailsPage .related-products h2 {
             color: var(--champagne);
-            margin-bottom: 25px;
+            font-size: 21px;
+            margin-bottom: 20px;
         }
 
-        #relatedProducts {
+        #productDetailsPage .related-product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        #productDetailsPage .related-product-card {
+            min-width: 0;
+            color: #fff;
+            text-decoration: none;
+            background: #171717;
+            border: 1px solid #30291e;
+            border-radius: 9px;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        #productDetailsPage .related-product-card img {
+            display: block;
             width: 100%;
+            height: 210px;
+            object-fit: cover;
+            border-radius: 6px;
         }
 
-        /* LOADING MESSAGE */
+        #productDetailsPage .related-product-card h3 {
+            font-size: 14px;
+            margin: 12px 0 6px;
+        }
 
-        .page-message {
+        #productDetailsPage .related-product-card p {
             color: var(--champagne);
-            padding: 40px 10px;
-            text-align: center;
+            font-weight: 700;
         }
-
-        /* PRODUCT IMAGE SAFETY */
-
-        #productDetailsPage img {
-            max-width: 100%;
-        }
-
-        /* MOBILE RESPONSIVE */
 
         @media (max-width: 600px) {
-
             .product-page-header {
-                padding: 15px 5%;
+                padding: 15px 4%;
             }
 
             .product-page-header .brand {
-                font-size: 14px;
+                font-size: 13px;
             }
 
-            .product-page-container {
-                margin-top: 20px;
+            .product-page-header a:last-child {
+                font-size: 12px;
+            }
+
+            #productDetailsPage .product-page-container {
+                margin: 20px auto;
                 padding: 0 15px;
             }
 
-            .main-product-image {
-                height: 360px !important;
+            #productDetailsPage .main-product-image {
+                height: 390px;
                 max-height: 60vh;
             }
 
-            .product-information h1 {
-                font-size: 25px;
+            #productDetailsPage .related-product-grid {
+                gap: 12px;
             }
 
-            .product-price {
-                font-size: 24px;
-            }
-
-            .product-thumbnails {
-                gap: 8px;
-            }
-
-            .product-thumbnail {
-                width: 55px !important;
-                height: 65px !important;
+            #productDetailsPage .related-product-card img {
+                height: 170px;
             }
         }
     </style>
@@ -319,45 +357,18 @@
 
 <body>
 
-    <!-- HEADER -->
-
     <header class="product-page-header">
-        <a class="brand" href="index.html">
-            DRESS DREAMS BY NIHARA
-        </a>
-
-        <a href="index.html">
-            ← Back to Shop
-        </a>
+        <a class="brand" href="index.html">DRESS DREAMS BY NIHARA</a>
+        <a href="index.html">← Back to Shop</a>
     </header>
 
-    <!-- MAIN PRODUCT PAGE -->
-
-    <main class="product-page-container">
-
-        <a class="back-link" href="index.html">
-            ← Continue Shopping
-        </a>
-
-        <!-- JavaScript loads product information here -->
-
+    <main>
         <div id="productDetailsPage">
-            <div class="page-message">
+            <p style="text-align:center;padding:60px 15px;">
                 Loading product details...
-            </div>
+            </p>
         </div>
-
-        <!-- RELATED PRODUCTS -->
-
-        <section class="related-products">
-            <h2>You May Also Like</h2>
-
-            <div id="relatedProducts"></div>
-        </section>
-
     </main>
-
-    <!-- SUPABASE AND WEBSITE JAVASCRIPT -->
 
     <script src="supabase-config.js"></script>
     <script type="module" src="script.js"></script>
