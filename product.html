@@ -42,6 +42,8 @@
             padding: 18px 6%;
             background: var(--white) !important;
             border-bottom: 1px solid var(--border);
+            position: relative;
+            z-index: 10;
         }
 
         .product-page-header a {
@@ -55,7 +57,47 @@
             letter-spacing: 1px;
         }
 
-        /* MAIN CONTAINER */
+        .product-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        /* SHOPPING BAG ICON */
+
+        .product-cart-button {
+            position: relative;
+            width: 43px;
+            height: 43px;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            background: var(--cream);
+            color: var(--dark-text);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-cart-button span {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            min-width: 19px;
+            height: 19px;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #b99a5b;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* PRODUCT CONTAINER */
 
         #productDetailsPage .product-page-container {
             max-width: 1200px;
@@ -284,11 +326,7 @@
         #productDetailsPage .product-page-add {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(
-                100deg,
-                #c4a66b,
-                #e6d4ad
-            );
+            background: linear-gradient(100deg, #c4a66b, #e6d4ad);
             color: #241d12;
             border: none;
             border-radius: 7px;
@@ -368,7 +406,174 @@
             font-weight: 700;
         }
 
-        /* NOT FOUND */
+        /* SHOPPING BAG BACKDROP */
+
+        .product-cart-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            transition: .25s;
+        }
+
+        .product-cart-backdrop.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* SHOPPING BAG DRAWER */
+
+        .product-cart-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: min(420px, 92vw);
+            height: 100vh;
+            height: 100dvh;
+            background: var(--white);
+            color: var(--dark-text);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            padding: 22px;
+            box-shadow: -5px 0 25px rgba(0,0,0,.12);
+            transform: translateX(105%);
+            transition: transform .3s ease;
+        }
+
+        .product-cart-drawer.open {
+            transform: translateX(0);
+        }
+
+        .product-cart-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .product-cart-heading h2 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .product-cart-heading button {
+            background: transparent;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            color: var(--dark-text);
+        }
+
+        .product-cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px 0;
+        }
+
+        .product-cart-footer {
+            border-top: 1px solid var(--border);
+            padding-top: 18px;
+        }
+
+        .product-cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .product-cart-footer > button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 6px;
+            background: linear-gradient(100deg, #c4a66b, #e6d4ad);
+            color: #241d12;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* CART ITEMS */
+
+        .product-cart-drawer .cart-row {
+            display: grid;
+            grid-template-columns: 75px 1fr auto;
+            gap: 12px;
+            align-items: start;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee6d9;
+        }
+
+        .product-cart-drawer .cart-row img {
+            width: 75px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .product-cart-drawer .cart-row h4 {
+            margin: 0 0 7px;
+            font-size: 14px;
+        }
+
+        .product-cart-drawer .cart-row p {
+            font-size: 12px;
+            color: var(--muted-text);
+            line-height: 1.5;
+        }
+
+        .product-cart-drawer .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .product-cart-drawer .qty-controls button,
+        .product-cart-drawer .remove-item {
+            background: #f5efe3;
+            border: 1px solid var(--border);
+            padding: 5px 9px;
+            cursor: pointer;
+            color: var(--dark-text);
+        }
+
+        .product-cart-drawer .empty-cart {
+            text-align: center;
+            color: var(--muted-text);
+            padding: 35px 10px;
+        }
+
+        /* ADD TO BAG CONFIRMATION */
+
+        .product-cart-toast {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translate(-50%, 20px);
+            background: #29251f;
+            color: #fff;
+            padding: 13px 22px;
+            border-radius: 7px;
+            font-size: 13px;
+            z-index: 10001;
+            opacity: 0;
+            visibility: hidden;
+            transition: .25s;
+            text-align: center;
+            width: max-content;
+            max-width: 90%;
+        }
+
+        .product-cart-toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, 0);
+        }
+
+        /* PRODUCT NOT FOUND */
 
         #productDetailsPage .product-not-found {
             text-align: center;
@@ -382,7 +587,7 @@
 
         /* TABLET */
 
-        @media (max-width: 900px) {
+        @media (max-width: 900px) and (min-width: 701px) {
             #productDetailsPage .product-details-layout {
                 gap: 30px;
             }
@@ -407,8 +612,17 @@
                 font-size: 13px;
             }
 
-            .product-page-header a:last-child {
+            .product-header-actions {
+                gap: 12px;
+            }
+
+            .product-header-actions > a {
                 font-size: 12px;
+            }
+
+            .product-cart-button {
+                width: 39px;
+                height: 39px;
             }
 
             #productDetailsPage .product-page-container {
@@ -451,6 +665,14 @@
         /* SMALL MOBILE */
 
         @media (max-width: 380px) {
+            .product-page-header .brand {
+                font-size: 11px;
+            }
+
+            .product-header-actions {
+                gap: 7px;
+            }
+
             #productDetailsPage .main-product-image {
                 height: 320px;
             }
@@ -469,24 +691,107 @@
 
 <body>
 
+    <!-- HEADER -->
     <header class="product-page-header">
+
         <a class="brand" href="index.html">
             DRESS DREAMS BY NIHARA
         </a>
 
-        <a href="index.html">
-            ← Back to Shop
-        </a>
+        <div class="product-header-actions">
+
+            <button
+                type="button"
+                id="cartToggle"
+                class="product-cart-button"
+                aria-label="Open shopping bag">
+
+                🛍️
+                <span id="cartCount">0</span>
+
+            </button>
+
+            <a href="index.html">
+                ← Back to Shop
+            </a>
+
+        </div>
+
     </header>
 
+    <!-- PRODUCT DETAILS -->
     <main>
+
         <div id="productDetailsPage">
+
             <p style="text-align:center;padding:60px 15px;">
                 Loading product details...
             </p>
+
         </div>
+
     </main>
 
+    <!-- SHOPPING BAG BACKDROP -->
+    <div
+        id="drawerBackdrop"
+        class="product-cart-backdrop">
+    </div>
+
+    <!-- SHOPPING BAG DRAWER -->
+    <aside
+        id="cartDrawer"
+        class="product-cart-drawer"
+        aria-hidden="true">
+
+        <div class="product-cart-heading">
+
+            <h2>Your Shopping Bag</h2>
+
+            <button
+                type="button"
+                id="cartClose"
+                aria-label="Close shopping bag">
+                ×
+            </button>
+
+        </div>
+
+        <div id="cartItems" class="product-cart-items">
+
+            <p class="empty-cart">
+                Your bag is waiting for something beautiful.
+            </p>
+
+        </div>
+
+        <div class="product-cart-footer">
+
+            <div class="product-cart-total">
+
+                <strong>Subtotal</strong>
+
+                <strong id="cartSubtotal">₹0</strong>
+
+            </div>
+
+            <button
+                type="button"
+                id="checkoutButton">
+                CONTINUE TO CHECKOUT
+            </button>
+
+        </div>
+
+    </aside>
+
+    <!-- ADD TO BAG CONFIRMATION -->
+    <div
+        id="toast"
+        class="product-cart-toast">
+    </div>
+
+    <!-- SCRIPTS -->
     <script src="supabase-config.js"></script>
     <script type="module" src="script.js"></script>
 
