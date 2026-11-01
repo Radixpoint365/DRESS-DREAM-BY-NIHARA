@@ -1,36 +1,31 @@
-# Dress Dreams by Nihara — Admin login setup
+# Dress Dreams by Nihara — Supabase-connected website
 
-This build adds a Supabase-backed admin sign-in gate. It will remain disabled until you configure Supabase.
+## What this build connects
+- Public storefront reads active categories, products and size/colour stock from Supabase.
+- Admin login uses Supabase Auth and checks membership in `public.admin_users`.
+- Admin can create/delete categories and create/edit/delete products and variants.
+- Product images upload to the `product-images` Storage bucket.
+- Product data and images are shared across customer devices.
 
-## 1. Create Supabase project
-Create a project at https://supabase.com/. In Project Settings → API, copy the Project URL and the **anon/public** key. Put them in `supabase-config.js`. Never put a `service_role` key in website files.
+## 1. Add your publishable key
+Open `supabase-config.js`. The Project URL is already filled in. Replace `PASTE_YOUR_SB_PUBLISHABLE_KEY_HERE` with the full `sb_publishable_...` key from Supabase → Project Settings → API Keys. Do not use an `sb_secret_...` key or database password.
 
-## 2. Create admin role table
-Run this in Supabase → SQL Editor:
+## 2. Apply the admin read policy patch
+In Supabase → SQL Editor → New query, paste and run the contents of `SUPABASE-ADMIN-POLICY-PATCH.sql`. This is required because the website must check the signed-in user's own row in `admin_users`; it does not expose other admin rows.
 
-```sql
-create table if not exists public.admin_users (
-  user_id uuid primary key references auth.users(id) on delete cascade,
-  created_at timestamptz not null default now()
-);
-alter table public.admin_users enable row level security;
-create policy "Admins can read their own admin role"
-on public.admin_users for select to authenticated
-using (auth.uid() = user_id);
-```
+## 3. Confirm your admin membership
+Your earlier SQL inserted your Auth user UUID into `public.admin_users`. Do not insert it again unless it is missing. In Table Editor → `admin_users`, confirm the row exists.
 
-## 3. Create your admin account
-In Supabase → Authentication → Users, add your admin email and a strong password. Copy the user's UUID, then run (replace the UUID):
+## 4. Deploy to Vercel
+Extract this ZIP. Upload the CONTENTS of `DRESS-DREAM-BY-NIHARA-main` to the root of your GitHub repository, replacing the old files. Keep the `assets` folder. Commit the changes and wait for Vercel to deploy.
 
-```sql
-insert into public.admin_users (user_id) values ('PASTE-ADMIN-USER-UUID-HERE');
-```
+## 5. Test
+- Store: `https://dressdreambynihara.vercel.app/`
+- Admin sign-in: `https://dressdreambynihara.vercel.app/admin-login.html`
+- Admin inventory: after signing in, `admin.html` opens.
 
-## 4. Deploy
-Upload all files and the `assets` folder from this project to the root of your GitHub repository, replacing old files, then commit. Vercel redeploys automatically.
+## Important before launch
+This build connects the catalogue, categories, variants and image storage. Checkout is intentionally not enabled for real payments. Customer orders, secure payment gateway verification, server-side stock reservation/decrement, PIN-code shipping calculation, returns/exchanges and email notifications still need a secure backend workflow. Do not accept real orders or payments until those are implemented and tested.
 
-## 5. Admin page
-Open `/admin-login.html`, or click Admin in the store footer.
-
-## Important limitation
-This update protects access to the existing admin prototype using Supabase Auth and an admin role check. Products and photos are **still stored in browser localStorage**, not a shared database, so changes are not yet visible to customers on other devices. The next stage must migrate products, categories, image storage, orders and stock to Supabase with Row Level Security and server-side payment verification. Do not treat this prototype as ready to accept live orders.
+## Database schema expected
+This build expects the tables and columns created in the setup steps: `categories(id,name,slug,is_active)`, `products(id,category_id,name,description,price,images,is_active,created_at)`, `product_variants(id,product_id,colour,size,stock)`, and `admin_users(user_id)`. It uses the existing `public.is_store_admin()` function for storage policies.
