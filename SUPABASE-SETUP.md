@@ -29,3 +29,11 @@ This build connects the catalogue, categories, variants and image storage. Check
 
 ## Database schema expected
 This build expects the tables and columns created in the setup steps: `categories(id,name,slug,is_active)`, `products(id,category_id,name,description,price,images,is_active,created_at)`, `product_variants(id,product_id,colour,size,stock)`, and `admin_users(user_id)`. It uses the existing `public.is_store_admin()` function for storage policies.
+
+
+## Manual UPI checkout (current limited setup)
+The storefront now displays the store owner's supplied personal Google Pay QR code and UPI ID at checkout. Customers must enter the exact cart amount in their UPI app, then submit their name, phone number and UPI transaction reference. The website opens an email draft to `dressdreamsbynihara@gmail.com`; the customer must send it.
+
+This is a manual notification flow only. It does NOT create an order record in Supabase, automatically verify a payment, reserve/decrement stock, or confirm an order. The store owner must verify the actual bank credit before confirming anything. The QR is a static personal UPI QR; customers may see the personal account holder name in their UPI app. UPI payments only are supported by this flow; cards and net banking are not.
+
+The UPI QR image is stored at `assets/dress-dreams-upi-qr.png`. The UPI ID is configured in `script.js`. Do not publish this setup unless you are comfortable making the personal UPI details public.
