@@ -1075,11 +1075,121 @@ document.getElementById('newsletterForm')
         e.target.reset();
     });
 
-// Checkout placeholder
+// Manual UPI checkout using the store owner's personal Google Pay QR.
+// This does NOT automatically verify payments or create a Supabase order.
+function openManualUpiCheckout() {
+    if (!cart.length) {
+        toast('Your shopping bag is empty.');
+        return;
+    }
+
+    let modal = document.getElementById('upiPaymentModal');
+    if (!modal) {
+        const style = document.createElement('style');
+        style.id = 'upiPaymentStyles';
+        style.textContent = `
+          .upi-modal-backdrop{position:fixed;inset:0;background:#090707b8;z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
+          .upi-modal-backdrop.open{display:flex}
+          .upi-modal{width:min(520px,100%);max-height:92dvh;overflow:auto;background:#f7f3ed;color:#171311;padding:24px;border:1px solid #b99b6b;box-shadow:0 18px 60px #0005}
+          .upi-modal-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd2c4;padding-bottom:12px}
+          .upi-modal-head h2{font:30px 'Cormorant Garamond',serif;margin:0}
+          .upi-modal-close{border:0;background:none;font-size:28px;cursor:pointer;color:#171311}
+          .upi-modal-qr{display:block;width:min(250px,75%);height:auto;margin:18px auto;background:white;padding:8px}
+          .upi-modal-center{text-align:center}
+          .upi-modal-muted{font-size:12px;color:#786d61;line-height:1.65}
+          .upi-modal-total{font-size:25px;font-weight:600;color:#171311;margin:8px}
+          .upi-copy-row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin:12px 0}
+          .upi-copy-row code{font-size:13px;background:#eee8df;padding:9px}
+          .upi-copy-row button,.upi-modal-submit{border:1px solid #b99b6b;background:#171311;color:#d7c4a2;padding:11px 15px;cursor:pointer}
+          .upi-modal-form{display:grid;gap:10px;margin-top:18px}
+          .upi-modal-form label{font-size:10px;letter-spacing:1px;font-weight:600}
+          .upi-modal-form input{width:100%;padding:12px;border:1px solid #c9bba9;background:#fff;font:13px 'DM Sans',sans-serif}
+          .upi-modal-submit{width:100%;background:#b99b6b;color:#100d0a;font-weight:600;letter-spacing:1px;margin-top:5px}
+          .upi-modal-warning{background:#eee8df;padding:11px;font-size:11px;line-height:1.6;color:#6f5737}
+        `;
+        document.head.appendChild(style);
+
+        modal = document.createElement('div');
+        modal.id = 'upiPaymentModal';
+        modal.className = 'upi-modal-backdrop';
+        modal.innerHTML = `
+          <section class="upi-modal" role="dialog" aria-modal="true" aria-labelledby="upiModalTitle">
+            <div class="upi-modal-head">
+              <h2 id="upiModalTitle">Pay with UPI</h2>
+              <button type="button" class="upi-modal-close" id="upiModalClose" aria-label="Close">×</button>
+            </div>
+            <div class="upi-modal-center">
+              <p class="upi-modal-muted">Scan this QR code using Google Pay, PhonePe or any UPI app.</p>
+              <img class="upi-modal-qr" src="assets/dress-dreams-upi-qr.png" alt="Dress Dreams by Nihara UPI payment QR code">
+              <p class="upi-modal-muted">Pay to the account shown in your UPI app.</p>
+              <div class="upi-modal-total" id="upiOrderTotal"></div>
+              <p class="upi-modal-muted">Enter the exact order amount in your UPI app.</p>
+              <div class="upi-copy-row"><code id="upiStoreId">ramyavasu2015-1@oksbi</code><button type="button" id="upiCopyId">COPY UPI ID</button></div>
+            </div>
+            <div class="upi-modal-warning">
+              After paying, enter your UPI transaction reference (UTR) below. Your order is not confirmed until the payment is checked manually by the store.
+            </div>
+            <form class="upi-modal-form" id="upiPaymentForm">
+              <label for="upiCustomerName">YOUR NAME</label>
+              <input id="upiCustomerName" name="customerName" autocomplete="name" required maxlength="100" placeholder="Full name">
+              <label for="upiCustomerPhone">PHONE NUMBER</label>
+              <input id="upiCustomerPhone" name="customerPhone" type="tel" autocomplete="tel" required pattern="[0-9+ ()-]{8,18}" placeholder="Your contact number">
+              <label for="upiTransactionRef">UPI TRANSACTION REFERENCE / UTR</label>
+              <input id="upiTransactionRef" name="utr" required minlength="6" maxlength="40" placeholder="Enter the UTR shown in your payment app">
+              <button class="upi-modal-submit" type="submit">SUBMIT PAYMENT DETAILS</button>
+            </form>
+            <p class="upi-modal-muted" style="margin-bottom:0">Submitting opens an email draft to the store. Please send it to notify us of your payment.</p>
+          </section>`;
+        document.body.appendChild(modal);
+
+        const close = () => modal.classList.remove('open');
+        modal.addEventListener('click', e => { if (e.target === modal) close(); });
+        modal.querySelector('#upiModalClose').addEventListener('click', close);
+        modal.querySelector('#upiCopyId').addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText('ramyavasu2015-1@oksbi');
+                toast('UPI ID copied.');
+            } catch {
+                toast('Please copy the UPI ID manually.');
+            }
+        });
+        modal.querySelector('#upiPaymentForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const name = modal.querySelector('#upiCustomerName').value.trim();
+            const phone = modal.querySelector('#upiCustomerPhone').value.trim();
+            const utr = modal.querySelector('#upiTransactionRef').value.trim();
+            const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
+            const lines = cart.map(item =>
+                `${item.name} | ${item.color} | Size ${item.size} | Qty ${item.qty} | ${money(item.price * item.qty)}`
+            ).join('\n');
+            const body = [
+                'UPI PAYMENT NOTIFICATION — DRESS DREAMS BY NIHARA',
+                '',
+                `Customer: ${name}`,
+                `Phone: ${phone}`,
+                `Order total: ${money(total)}`,
+                `UPI transaction reference / UTR: ${utr}`,
+                '',
+                'Items:',
+                lines,
+                '',
+                'Please verify this payment in the bank account before confirming the order.'
+            ].join('\n');
+            const subject = `UPI payment details - ${name} - ${utr}`;
+            window.location.href = `mailto:dressdreamsbynihara@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            toast('Email draft opened. Send it to notify the store.');
+            close();
+        });
+    }
+
+    const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
+    modal.querySelector('#upiOrderTotal').textContent = money(total);
+    modal.classList.add('open');
+}
+
+// Manual UPI checkout. Payment must be checked manually before order confirmation.
 document.getElementById('checkoutButton')
-    ?.addEventListener('click', () => {
-        toast('Secure UPI and card checkout is not connected yet.');
-    });
+    ?.addEventListener('click', openManualUpiCheckout);
 
 // Search icon
 document.getElementById('searchToggle')
