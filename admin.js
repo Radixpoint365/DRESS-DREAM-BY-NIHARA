@@ -18,6 +18,43 @@ function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','
 function stockFields(vars=[]){$('variantStockFields').innerHTML=vars.map((v,i)=>`<div class="variant-stock-block"><h3>${escapeHtml(v.colour)}</h3><div class="stock-inputs">${SIZES.map(sz=>`<div><label>${sz}</label><input type="number" min="0" step="1" id="v${i}_${sz}" value="${Number(v.stock?.[sz]||0)}"></div>`).join('')}</div></div>`).join('');}
 function render(){const units=products.reduce((n,p)=>n+p.variants.reduce((a,v)=>a+Number(v.stock||0),0),0);$('statProducts').textContent=products.length;$('statUnits').textContent=units;$('statSold').textContent=products.filter(p=>p.variants.every(v=>Number(v.stock||0)===0)).length;$('adminProducts').innerHTML=products.map(p=>`<article class="admin-product"><img src="${escapeHtml(p.image||'')}" alt=""><div><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.categoryName||'Uncategorised')} · ${money(p.price)} · ${p.variants.reduce((n,v)=>n+Number(v.stock||0),0)} units</p><p>${p.variants.map(v=>`${escapeHtml(v.colour)}: ${v.stock} units`).join(' | ')}</p></div><div class="admin-actions"><button data-edit="${p.id}">EDIT</button><button class="delete" data-delete="${p.id}">DELETE</button></div></article>`).join('')||'<p class="admin-help">No products yet. Add your first piece.</p>';}
 async function loadAll(){const [cr,pr]=await Promise.all([db.from('categories').select('*').order('name'),db.from('products').select('*, categories(name), product_variants(*)').order('created_at',{ascending:false})]);if(cr.error)throw cr.error;if(pr.error)throw pr.error;categories=cr.data||[];products=(pr.data||[]).map(p=>({id:p.id,name:p.name,categoryId:p.category_id,categoryName:p.categories?.name||'',price:Number(p.price),description:p.description||'',image:p.images?.[0]||'',variants:(p.product_variants||[]).map(v=>({id:v.id,colour:v.colour,size:v.size,stock:Number(v.stock||0)}))}));renderCategories();render();}
+
+const orderMoney=n=>money(Number(n||0));
+function orderStatusLabel(v){return ({new:'New',processing:'Processing',shipped:'Shipped',delivered:'Delivered',cancelled:'Cancelled'})[v]||v;}
+function paymentStatusLabel(v){return ({pending_verification:'Pending verification',verified:'Verified',rejected:'Rejected'})[v]||v;}
+async function loadOrders(){
+ const host=$('adminOrders'); if(!host)return;
+ host.innerHTML='<p class="admin-help">Loading orders…</p>';
+ const {data,error}=await db.from('store_orders').select('*').order('created_at',{ascending:false}).limit(100);
+ if(error){host.innerHTML=`<p class="admin-help">Could not load orders: ${escapeHtml(error.message)}. Check the order-table SQL setup.</p>`;return;}
+ if(!data?.length){host.innerHTML='<p class="admin-help">No customer orders yet.</p>';return;}
+ host.innerHTML=data.map(o=>{
+  const items=Array.isArray(o.items)?o.items:[];
+  return `<article class="admin-product" style="display:block;margin:14px 0;padding:16px">
+   <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h3>${escapeHtml(o.order_number||o.id)}</h3><p>${new Date(o.created_at).toLocaleString('en-IN')} · ${orderMoney(o.total_amount)}</p></div><strong>${escapeHtml(paymentStatusLabel(o.payment_status))}</strong></div>
+   <p><b>${escapeHtml(o.customer_name)}</b> · ${escapeHtml(o.customer_phone)}${o.customer_email?' · '+escapeHtml(o.customer_email):''}</p>
+   <p>${escapeHtml(o.delivery_address)}, ${escapeHtml(o.pincode)}</p>
+   <p><b>UPI reference:</b> ${escapeHtml(o.utr)}</p>
+   <p><b>Items:</b> ${items.map(x=>`${escapeHtml(x.product_name)} — ${escapeHtml(x.colour)} / ${escapeHtml(x.size)} × ${Number(x.quantity)} (${orderMoney(x.line_total)})`).join('<br>')}</p>
+   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
+    <label>Payment <select data-order-payment="${o.id}"><option value="pending_verification" ${o.payment_status==='pending_verification'?'selected':''}>Pending verification</option><option value="verified" ${o.payment_status==='verified'?'selected':''}>Verified</option><option value="rejected" ${o.payment_status==='rejected'?'selected':''}>Rejected</option></select></label>
+    <label>Order <select data-order-status="${o.id}">${['new','processing','shipped','delivered','cancelled'].map(v=>`<option value="${v}" ${o.order_status===v?'selected':''}>${orderStatusLabel(v)}</option>`).join('')}</select></label>
+    <button type="button" class="add-button" data-order-save="${o.id}">SAVE STATUS</button>
+   </div></article>`;
+ }).join('');
+}
+$('refreshOrders')?.addEventListener('click',loadOrders);
+$('adminOrders')?.addEventListener('click',async e=>{
+ const b=e.target.closest('[data-order-save]');if(!b)return;
+ const id=b.dataset.orderSave;
+ const payment=$(`adminOrders`).querySelector(`[data-order-payment="${id}"]`).value;
+ const status=$(`adminOrders`).querySelector(`[data-order-status="${id}"]`).value;
+ b.disabled=true;b.textContent='SAVING…';
+ const {error}=await db.from('store_orders').update({payment_status:payment,order_status:status}).eq('id',id);
+ if(error){message('Could not update order: '+error.message);b.disabled=false;b.textContent='SAVE STATUS';return;}
+ message('Order status updated.');await loadOrders();
+});
+
 $('categoryForm').addEventListener('submit',async e=>{e.preventDefault();const name=$('categoryName').value.trim();if(!name)return;const {error}=await db.from('categories').insert({name,slug:slugify(name),is_active:true});if(error){message(error.message);return;} $('categoryName').value='';await loadAll();message('Category added.');});
 $('adminCategories').addEventListener('click',async e=>{const b=e.target.closest('[data-cat-delete]');if(!b||!confirm('Delete this category? Products will remain but become uncategorised.'))return;const {error}=await db.from('categories').delete().eq('id',b.dataset.catDelete);if(error)message(error.message);else{await loadAll();message('Category deleted.');}});
 $('buildStock').addEventListener('click',()=>{const names=[...new Set($('productColors').value.split(',').map(x=>x.trim()).filter(Boolean))];if(!names.length){alert('Enter at least one colour.');return;}editingVariants=names.map(colour=>({colour,stock:{}}));stockFields(editingVariants);});
@@ -27,4 +64,4 @@ $('productForm').addEventListener('submit',async e=>{e.preventDefault();const na
 function reset(){$('productForm').reset();$('productId').value='';$('formTitle').textContent='Add a new piece';$('cancelEdit').style.display='none';$('variantStockFields').innerHTML='';$('imagePreview').style.display='none';editingVariants=[];}
 $('adminProducts').addEventListener('click',async e=>{const eb=e.target.closest('[data-edit]'),dbtn=e.target.closest('[data-delete]');if(eb){const p=products.find(x=>x.id===eb.dataset.edit);$('productId').value=p.id;$('productName').value=p.name;$('productCategory').value=p.categoryId;$('productPrice').value=p.price;$('productImage').value=p.image;$('imagePreview').src=p.image;$('imagePreview').style.display='block';$('productDescription').value=p.description;$('productColors').value=[...new Set(p.variants.map(v=>v.colour))].join(', ');editingVariants=[...new Set(p.variants.map(v=>v.colour))].map(colour=>({colour,stock:Object.fromEntries(SIZES.map(sz=>[sz,p.variants.find(v=>v.colour===colour&&v.size===sz)?.stock||0]))}));stockFields(editingVariants);editingVariants.forEach((v,i)=>SIZES.forEach(sz=>{const input=$(`v${i}_${sz}`);if(input)input.value=v.stock[sz]||0;}));$('formTitle').textContent='Edit product';$('cancelEdit').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}if(dbtn&&confirm('Delete this product and its variants?')){const {error}=await db.from('products').delete().eq('id',dbtn.dataset.delete);if(error)message(error.message);else{await loadAll();message('Product deleted.');}}});
 $('cancelEdit').addEventListener('click',reset);
-try{await loadAll();}catch(e){message('Could not load Supabase data: '+e.message);}
+try{await loadAll();await loadOrders();db.channel('dd-admin-orders').on('postgres_changes',{event:'INSERT',schema:'public',table:'store_orders'},()=>loadOrders()).subscribe();}catch(e){message('Could not load Supabase data: '+e.message);}
