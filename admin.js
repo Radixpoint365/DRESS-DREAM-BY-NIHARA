@@ -22,12 +22,17 @@ async function loadAll(){const [cr,pr]=await Promise.all([db.from('categories').
 const orderMoney=n=>money(Number(n||0));
 function orderStatusLabel(v){return ({new:'New',processing:'Processing',shipped:'Shipped',delivered:'Delivered',cancelled:'Cancelled'})[v]||v;}
 function paymentStatusLabel(v){return ({pending_verification:'Pending verification',verified:'Verified',rejected:'Rejected'})[v]||v;}
-async function loadOrders(){
+let cachedAdminOrders=[];
+function renderAdminOrders(){
  const host=$('adminOrders'); if(!host)return;
- host.innerHTML='<p class="admin-help">Loading orders…</p>';
- const {data,error}=await db.from('store_orders').select('*').order('created_at',{ascending:false}).limit(100);
- if(error){host.innerHTML=`<p class="admin-help">Could not load orders: ${escapeHtml(error.message)}. Check the order-table SQL setup.</p>`;return;}
- if(!data?.length){host.innerHTML='<p class="admin-help">No customer orders yet.</p>';return;}
+ const q=($('orderSearch')?.value||'').trim().toLowerCase();
+ const data=cachedAdminOrders.filter(o=>{
+  const items=Array.isArray(o.items)?o.items:[];
+  const haystack=[o.order_number,o.id,o.customer_name,o.customer_phone,o.customer_email,o.delivery_address,o.pincode,o.utr,o.payment_status,o.order_status,...items.flatMap(x=>[x.product_name,x.colour,x.size])].join(' ').toLowerCase();
+  return !q||haystack.includes(q);
+ });
+ if(!cachedAdminOrders.length){host.innerHTML='<p class="admin-help">No customer orders yet.</p>';return;}
+ if(!data.length){host.innerHTML='<p class="admin-help">No orders match your search.</p>';return;}
  host.innerHTML=data.map(o=>{
   const items=Array.isArray(o.items)?o.items:[];
   return `<article class="admin-product" style="display:block;margin:14px 0;padding:16px">
@@ -42,6 +47,14 @@ async function loadOrders(){
     <button type="button" class="add-button" data-order-save="${o.id}">SAVE STATUS</button>
    </div></article>`;
  }).join('');
+}
+async function loadOrders(){
+ const host=$('adminOrders'); if(!host)return;
+ host.innerHTML='<p class="admin-help">Loading orders…</p>';
+ const {data,error}=await db.from('store_orders').select('*').order('created_at',{ascending:false}).limit(100);
+ if(error){host.innerHTML=`<p class="admin-help">Could not load orders: ${escapeHtml(error.message)}. Check the order-table SQL setup.</p>`;return;}
+ cachedAdminOrders=data||[];
+ renderAdminOrders();
 }
 $('refreshOrders')?.addEventListener('click',loadOrders);
 $('adminOrders')?.addEventListener('click',async e=>{
