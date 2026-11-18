@@ -47,3 +47,13 @@ The UPI QR image is stored at `assets/dress-dreams-upi-qr.png`. The UPI ID is co
 5. Verify each UPI credit in the bank account before setting Payment to **Verified**. Never rely on the customer's UTR alone.
 
 Customer submissions are not payment proof. New orders are always forced by a database trigger to `pending_verification` and `new`, regardless of values sent by the browser.
+
+
+## Customer account page
+- Customer account page: `account.html` (email/password registration and sign-in, plus mobile OTP sign-in).
+- Email confirmation behaviour follows Supabase Authentication settings.
+- To use mobile OTP, configure an SMS provider in Supabase Dashboard → Authentication → Providers → Phone, and enable Phone authentication. SMS delivery may incur provider charges.
+- The account page is currently optional and does not yet require sign-in to submit a guest order or attach existing orders to a customer profile. Do not describe guest orders as account-linked until that workflow is added.
+
+## Admin order filters
+- Customer orders can be searched and filtered by payment status and order status. Search and both filters work together; Clear Filters resets them.
