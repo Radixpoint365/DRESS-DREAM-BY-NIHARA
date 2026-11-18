@@ -1082,6 +1082,10 @@ function openManualUpiCheckout() {
         toast('Your shopping bag is empty.');
         return;
     }
+    if (!db) {
+        toast('Store connection is not ready. Please refresh and try again.');
+        return;
+    }
 
     let modal = document.getElementById('upiPaymentModal');
     if (!modal) {
@@ -1103,21 +1107,19 @@ function openManualUpiCheckout() {
           .upi-copy-row button,.upi-modal-submit{border:1px solid #b99b6b;background:#171311;color:#d7c4a2;padding:11px 15px;cursor:pointer}
           .upi-modal-form{display:grid;gap:10px;margin-top:18px}
           .upi-modal-form label{font-size:10px;letter-spacing:1px;font-weight:600}
-          .upi-modal-form input{width:100%;padding:12px;border:1px solid #c9bba9;background:#fff;font:13px 'DM Sans',sans-serif}
+          .upi-modal-form input,.upi-modal-form textarea{width:100%;padding:12px;border:1px solid #c9bba9;background:#fff;font:13px 'DM Sans',sans-serif}
+          .upi-modal-form textarea{min-height:75px;resize:vertical}
           .upi-modal-submit{width:100%;background:#b99b6b;color:#100d0a;font-weight:600;letter-spacing:1px;margin-top:5px}
+          .upi-modal-submit:disabled{opacity:.6;cursor:wait}
           .upi-modal-warning{background:#eee8df;padding:11px;font-size:11px;line-height:1.6;color:#6f5737}
         `;
         document.head.appendChild(style);
-
         modal = document.createElement('div');
         modal.id = 'upiPaymentModal';
         modal.className = 'upi-modal-backdrop';
         modal.innerHTML = `
           <section class="upi-modal" role="dialog" aria-modal="true" aria-labelledby="upiModalTitle">
-            <div class="upi-modal-head">
-              <h2 id="upiModalTitle">Pay with UPI</h2>
-              <button type="button" class="upi-modal-close" id="upiModalClose" aria-label="Close">×</button>
-            </div>
+            <div class="upi-modal-head"><h2 id="upiModalTitle">Pay with UPI</h2><button type="button" class="upi-modal-close" id="upiModalClose" aria-label="Close">×</button></div>
             <div class="upi-modal-center">
               <p class="upi-modal-muted">Scan this QR code using Google Pay, PhonePe or any UPI app.</p>
               <img class="upi-modal-qr" src="assets/dress-dreams-upi-qr.png" alt="Dress Dreams by Nihara UPI payment QR code">
@@ -1126,19 +1128,17 @@ function openManualUpiCheckout() {
               <p class="upi-modal-muted">Enter the exact order amount in your UPI app.</p>
               <div class="upi-copy-row"><code id="upiStoreId">ramyavasu2015-1@oksbi</code><button type="button" id="upiCopyId">COPY UPI ID</button></div>
             </div>
-            <div class="upi-modal-warning">
-              After paying, enter your UPI transaction reference (UTR) below. Your order is not confirmed until the payment is checked manually by the store.
-            </div>
+            <div class="upi-modal-warning">After paying, enter the UPI transaction reference (UTR). Your order remains pending until the store verifies the payment.</div>
             <form class="upi-modal-form" id="upiPaymentForm">
-              <label for="upiCustomerName">YOUR NAME</label>
-              <input id="upiCustomerName" name="customerName" autocomplete="name" required maxlength="100" placeholder="Full name">
-              <label for="upiCustomerPhone">PHONE NUMBER</label>
-              <input id="upiCustomerPhone" name="customerPhone" type="tel" autocomplete="tel" required pattern="[0-9+ ()-]{8,18}" placeholder="Your contact number">
-              <label for="upiTransactionRef">UPI TRANSACTION REFERENCE / UTR</label>
-              <input id="upiTransactionRef" name="utr" required minlength="6" maxlength="40" placeholder="Enter the UTR shown in your payment app">
-              <button class="upi-modal-submit" type="submit">SUBMIT PAYMENT DETAILS</button>
+              <label for="upiCustomerName">YOUR NAME</label><input id="upiCustomerName" name="customerName" autocomplete="name" required maxlength="100" placeholder="Full name">
+              <label for="upiCustomerPhone">PHONE NUMBER</label><input id="upiCustomerPhone" name="customerPhone" type="tel" autocomplete="tel" required pattern="[0-9+ ()-]{8,18}" placeholder="Contact number">
+              <label for="upiCustomerEmail">EMAIL (OPTIONAL)</label><input id="upiCustomerEmail" name="customerEmail" type="email" autocomplete="email" maxlength="160" placeholder="Email address">
+              <label for="upiCustomerAddress">DELIVERY ADDRESS</label><textarea id="upiCustomerAddress" name="customerAddress" required maxlength="600" placeholder="House / street, area, city, district, state"></textarea>
+              <label for="upiCustomerPincode">PIN CODE</label><input id="upiCustomerPincode" name="pincode" inputmode="numeric" pattern="[0-9]{6}" required maxlength="6" placeholder="6-digit PIN code">
+              <label for="upiTransactionRef">UPI TRANSACTION REFERENCE / UTR</label><input id="upiTransactionRef" name="utr" required minlength="6" maxlength="40" placeholder="Enter the UTR shown in your payment app">
+              <button class="upi-modal-submit" type="submit">SUBMIT ORDER →</button>
             </form>
-            <p class="upi-modal-muted" style="margin-bottom:0">Submitting opens an email draft to the store. Please send it to notify us of your payment.</p>
+            <p class="upi-modal-muted" style="margin-bottom:0">Your order details will be sent securely to the store's order dashboard. No email app will open.</p>
           </section>`;
         document.body.appendChild(modal);
 
@@ -1146,44 +1146,50 @@ function openManualUpiCheckout() {
         modal.addEventListener('click', e => { if (e.target === modal) close(); });
         modal.querySelector('#upiModalClose').addEventListener('click', close);
         modal.querySelector('#upiCopyId').addEventListener('click', async () => {
+            try { await navigator.clipboard.writeText('ramyavasu2015-1@oksbi'); toast('UPI ID copied.'); }
+            catch { toast('Please copy the UPI ID manually.'); }
+        });
+        modal.querySelector('#upiPaymentForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const form=e.currentTarget, btn=form.querySelector('[type="submit"]');
+            if (!form.reportValidity()) return;
+            if (!db) { toast('Store connection is not ready. Refresh and try again.'); return; }
+            const total=cart.reduce((sum,item)=>sum+Number(item.price||0)*Number(item.qty||0),0);
+            const orderItems=cart.map(item=>({
+                product_id:String(item.id), product_name:String(item.name||''),
+                colour:String(item.color||''), size:String(item.size||''),
+                quantity:Number(item.qty||0), unit_price:Number(item.price||0),
+                line_total:Number(item.price||0)*Number(item.qty||0)
+            }));
+            const payload={
+                customer_name:form.customerName.value.trim(),
+                customer_phone:form.customerPhone.value.trim(),
+                customer_email:form.customerEmail.value.trim()||null,
+                delivery_address:form.customerAddress.value.trim(),
+                pincode:form.pincode.value.trim(),
+                utr:form.utr.value.trim(),
+                total_amount:total,
+                items:orderItems
+            };
+            btn.disabled=true; btn.textContent='SUBMITTING ORDER…';
             try {
-                await navigator.clipboard.writeText('ramyavasu2015-1@oksbi');
-                toast('UPI ID copied.');
-            } catch {
-                toast('Please copy the UPI ID manually.');
+                const {data,error}=await db.from('store_orders').insert(payload).select('id,order_number').single();
+                if(error) throw error;
+                cart=[]; saveCart();
+                form.reset(); close();
+                const ref=data?.order_number || data?.id;
+                toast(`Order ${ref} submitted! Payment is pending verification.`);
+                alert(`Thank you! Your order ${ref} has been submitted. The store will verify your UPI payment before confirming it.`);
+            } catch(err) {
+                console.error('Order submission failed:',err);
+                toast(`Could not submit order: ${err.message||'Please try again.'}`);
+            } finally {
+                btn.disabled=false; btn.textContent='SUBMIT ORDER →';
             }
         });
-        modal.querySelector('#upiPaymentForm').addEventListener('submit', e => {
-            e.preventDefault();
-            const name = modal.querySelector('#upiCustomerName').value.trim();
-            const phone = modal.querySelector('#upiCustomerPhone').value.trim();
-            const utr = modal.querySelector('#upiTransactionRef').value.trim();
-            const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
-            const lines = cart.map(item =>
-                `${item.name} | ${item.color} | Size ${item.size} | Qty ${item.qty} | ${money(item.price * item.qty)}`
-            ).join('\n');
-            const body = [
-                'UPI PAYMENT NOTIFICATION — DRESS DREAMS BY NIHARA',
-                '',
-                `Customer: ${name}`,
-                `Phone: ${phone}`,
-                `Order total: ${money(total)}`,
-                `UPI transaction reference / UTR: ${utr}`,
-                '',
-                'Items:',
-                lines,
-                '',
-                'Please verify this payment in the bank account before confirming the order.'
-            ].join('\n');
-            const subject = `UPI payment details - ${name} - ${utr}`;
-            window.location.href = `mailto:dressdreamsbynihara@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            toast('Email draft opened. Send it to notify the store.');
-            close();
-        });
     }
-
-    const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
-    modal.querySelector('#upiOrderTotal').textContent = money(total);
+    const total=cart.reduce((sum,item)=>sum+Number(item.price||0)*Number(item.qty||0),0);
+    modal.querySelector('#upiOrderTotal').textContent=money(total);
     modal.classList.add('open');
 }
 
