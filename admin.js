@@ -26,26 +26,19 @@ let cachedAdminOrders=[];
 function renderAdminOrders(){
  const host=$('adminOrders'); if(!host)return;
  const q=($('orderSearch')?.value||'').trim().toLowerCase();
+ const paymentFilter=$('paymentFilter')?.value||'all';
+ const statusFilter=$('orderStatusFilter')?.value||'all';
  const data=cachedAdminOrders.filter(o=>{
   const items=Array.isArray(o.items)?o.items:[];
   const haystack=[o.order_number,o.id,o.customer_name,o.customer_phone,o.customer_email,o.delivery_address,o.pincode,o.utr,o.payment_status,o.order_status,...items.flatMap(x=>[x.product_name,x.colour,x.size])].join(' ').toLowerCase();
-  return !q||haystack.includes(q);
+  return (!q||haystack.includes(q)) && (paymentFilter==='all'||o.payment_status===paymentFilter) && (statusFilter==='all'||o.order_status===statusFilter);
  });
+ const count=$('orderFilterCount'); if(count)count.textContent=`Showing ${data.length} of ${cachedAdminOrders.length} orders`;
  if(!cachedAdminOrders.length){host.innerHTML='<p class="admin-help">No customer orders yet.</p>';return;}
- if(!data.length){host.innerHTML='<p class="admin-help">No orders match your search.</p>';return;}
+ if(!data.length){host.innerHTML='<p class="admin-help">No orders match these filters.</p>';return;}
  host.innerHTML=data.map(o=>{
   const items=Array.isArray(o.items)?o.items:[];
-  return `<article class="admin-product" style="display:block;margin:14px 0;padding:16px">
-   <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h3>${escapeHtml(o.order_number||o.id)}</h3><p>${new Date(o.created_at).toLocaleString('en-IN')} · ${orderMoney(o.total_amount)}</p></div><strong>${escapeHtml(paymentStatusLabel(o.payment_status))}</strong></div>
-   <p><b>${escapeHtml(o.customer_name)}</b> · ${escapeHtml(o.customer_phone)}${o.customer_email?' · '+escapeHtml(o.customer_email):''}</p>
-   <p>${escapeHtml(o.delivery_address)}, ${escapeHtml(o.pincode)}</p>
-   <p><b>UPI reference:</b> ${escapeHtml(o.utr)}</p>
-   <p><b>Items:</b> ${items.map(x=>`${escapeHtml(x.product_name)} — ${escapeHtml(x.colour)} / ${escapeHtml(x.size)} × ${Number(x.quantity)} (${orderMoney(x.line_total)})`).join('<br>')}</p>
-   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
-    <label>Payment <select data-order-payment="${o.id}"><option value="pending_verification" ${o.payment_status==='pending_verification'?'selected':''}>Pending verification</option><option value="verified" ${o.payment_status==='verified'?'selected':''}>Verified</option><option value="rejected" ${o.payment_status==='rejected'?'selected':''}>Rejected</option></select></label>
-    <label>Order <select data-order-status="${o.id}">${['new','processing','shipped','delivered','cancelled'].map(v=>`<option value="${v}" ${o.order_status===v?'selected':''}>${orderStatusLabel(v)}</option>`).join('')}</select></label>
-    <button type="button" class="add-button" data-order-save="${o.id}">SAVE STATUS</button>
-   </div></article>`;
+  return `<article class="admin-product" style="display:block;margin:14px 0;padding:16px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h3>${escapeHtml(o.order_number||o.id)}</h3><p>${new Date(o.created_at).toLocaleString('en-IN')} · ${orderMoney(o.total_amount)}</p></div><strong>${escapeHtml(paymentStatusLabel(o.payment_status))}</strong></div><p><b>${escapeHtml(o.customer_name)}</b> · ${escapeHtml(o.customer_phone)}${o.customer_email?' · '+escapeHtml(o.customer_email):''}</p><p>${escapeHtml(o.delivery_address)}, ${escapeHtml(o.pincode)}</p><p><b>UPI reference:</b> ${escapeHtml(o.utr)}</p><p><b>Items:</b> ${items.map(x=>`${escapeHtml(x.product_name)} — ${escapeHtml(x.colour)} / ${escapeHtml(x.size)} × ${Number(x.quantity)} (${orderMoney(x.line_total)})`).join('<br>')}</p><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px"><label>Payment <select data-order-payment="${o.id}"><option value="pending_verification" ${o.payment_status==='pending_verification'?'selected':''}>Pending verification</option><option value="verified" ${o.payment_status==='verified'?'selected':''}>Verified</option><option value="rejected" ${o.payment_status==='rejected'?'selected':''}>Rejected</option></select></label><label>Order <select data-order-status="${o.id}">${['new','processing','shipped','delivered','cancelled'].map(v=>`<option value="${v}" ${o.order_status===v?'selected':''}>${orderStatusLabel(v)}</option>`).join('')}</select></label><button type="button" class="add-button" data-order-save="${o.id}">SAVE STATUS</button></div></article>`;
  }).join('');
 }
 async function loadOrders(){
@@ -57,6 +50,10 @@ async function loadOrders(){
  renderAdminOrders();
 }
 $('refreshOrders')?.addEventListener('click',loadOrders);
+$('orderSearch')?.addEventListener('input',renderAdminOrders);
+$('paymentFilter')?.addEventListener('change',renderAdminOrders);
+$('orderStatusFilter')?.addEventListener('change',renderAdminOrders);
+$('clearOrderFilters')?.addEventListener('click',()=>{if($('orderSearch'))$('orderSearch').value='';if($('paymentFilter'))$('paymentFilter').value='all';if($('orderStatusFilter'))$('orderStatusFilter').value='all';renderAdminOrders();});
 $('adminOrders')?.addEventListener('click',async e=>{
  const b=e.target.closest('[data-order-save]');if(!b)return;
  const id=b.dataset.orderSave;
