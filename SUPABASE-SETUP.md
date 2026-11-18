@@ -32,8 +32,18 @@ This build expects the tables and columns created in the setup steps: `categorie
 
 
 ## Manual UPI checkout (current limited setup)
-The storefront now displays the store owner's supplied personal Google Pay QR code and UPI ID at checkout. Customers must enter the exact cart amount in their UPI app, then submit their name, phone number and UPI transaction reference. The website opens an email draft to `dressdreamsbynihara@gmail.com`; the customer must send it.
+The storefront now displays the store owner's supplied personal Google Pay QR code and UPI ID at checkout. Customers must enter the exact cart amount in their UPI app, then submit their name, phone number and UPI transaction reference. The website now inserts the customer's order directly into the `store_orders` table in Supabase. No email app is opened.
 
-This is a manual notification flow only. It does NOT create an order record in Supabase, automatically verify a payment, reserve/decrement stock, or confirm an order. The store owner must verify the actual bank credit before confirming anything. The QR is a static personal UPI QR; customers may see the personal account holder name in their UPI app. UPI payments only are supported by this flow; cards and net banking are not.
+Orders are stored in Supabase and appear in the admin dashboard. Payment verification remains manual: the store owner must verify the actual bank credit before marking an order as paid. This setup does not automatically verify a payment, reserve/decrement stock, or send customer confirmation emails. The QR is a static personal UPI QR; customers may see the personal account holder name in their UPI app. UPI payments only are supported by this flow; cards and net banking are not.
 
 The UPI QR image is stored at `assets/dress-dreams-upi-qr.png`. The UPI ID is configured in `script.js`. Do not publish this setup unless you are comfortable making the personal UPI details public.
+
+
+## 7. Enable website order submission and admin order management
+1. In Supabase → SQL Editor → New query, paste and run `SUPABASE-ORDERS-SETUP.sql`.
+2. This creates `public.store_orders`, enables row-level security, allows customers to submit orders without reading other customers' orders, and allows signed-in store admins to view/update orders.
+3. Deploy the updated `script.js`, `admin.js`, and `admin.html` files to Vercel.
+4. Open `admin.html` while signed in. New orders appear in **Customer orders**; the dashboard subscribes to new-order updates (Realtime must be enabled for the table).
+5. Verify each UPI credit in the bank account before setting Payment to **Verified**. Never rely on the customer's UTR alone.
+
+Customer submissions are not payment proof. New orders are always forced by a database trigger to `pending_verification` and `new`, regardless of values sent by the browser.
